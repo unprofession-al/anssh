@@ -4,9 +4,9 @@ local -a command
 
 _anssh () {
     command="$words"
-    _arguments '-i[inventory file]:filename:->files'
+    _arguments '-i[inventory file]:filename:->inv'
     case "$state" in
-        files)
+        inv)
             _anssh_inventories_show
             ;;
         *)
