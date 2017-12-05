@@ -22,19 +22,42 @@ while getopts ":i:l" opt; do
   esac
 done
 
-INV_FLAG=""
+INV_FILE=""
 
 if [ "$INV" != "" ]; then
     if [ -e $INV ] && [ -f $INV ]; then
-        INV_FLAG="--inventory $INV"
+        INV_FILE=$INV
     else
         echo "Error: Inventory $INV does not exist."
         exit 1
     fi
 fi
 
+if [ "$INV_FILE" == "" ] && [ -e ./ansible.cfg ] && [ -f ./ansible.cfg ]; then
+    POTENTIAL_INV_FILE=`awk -F "=" '/^inventory/ {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' ansible.cfg`
+    if [ -e $POTENTIAL_INV_FILE ] && [ -f $POTENTIAL_INV_FILE ]; then
+        INV_FILE=$POTENTIAL_INV_FILE
+    else
+        echo "Error: Inventory $INV from ansible.cfg does not exist."
+        exit 1
+    fi
+fi
+
+INV_FLAG=""
+
+if [ "$INV_FILE" == "" ]; then
+    echo "Error: No inventory to work with."
+    exit 1
+fi
+
+INV_FLAG="--inventory $INV_FILE"
+
 if $LIST_HOSTS; then
-    HOSTS=`ansible all $INV_FLAG --list-hosts | grep -v 'hosts' | sed 's/^[ \t]*//' | tr '\n' ' ' 2>/dev/null`
+    HOSTS=`awk '/children\]/{flag=0;next}/\[*\]/{flag=1}flag' $INV_FILE | awk -F" " '!/^(;|#|\[|[:space:]*$)/ {print $1}'`
+    # if any other inventory than a static file is used, awking does frankly not work
+    # in that case, we have to invoke ansible with --list-hosts, which is slow as
+    # fuck...
+    # HOSTS=`ansible all $INV_FLAG --list-hosts | grep -v 'hosts' | sed 's/^[ \t]*//' | tr '\n' ' ' 2>/dev/null`
     echo $HOSTS
     exit 0
 fi

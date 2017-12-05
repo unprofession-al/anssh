@@ -4,6 +4,8 @@
 autocompletion. Also, it reads your `ansible.cfg` for `ssh_args` in so you
 don't have to specify them manually.
 
+[![asciicast](https://asciinema.org/a/goPw7w6l8qCFPLXmEjxZEKCHL.png)](https://asciinema.org/a/goPw7w6l8qCFPLXmEjxZEKCHL)
+
 ## Prerequirements
 
 * `ssh` installed
@@ -19,7 +21,7 @@ don't have to specify them manually.
 
 ## Run
 
-Change into your ansible directory (where you wourld run `ansible`) and run
+Change into your ansible directory (where you would run `ansible`) and run
 
 ```
 anssh [-i INVENTORY_FILE] HOSTNAME
