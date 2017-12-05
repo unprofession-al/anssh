@@ -4,7 +4,9 @@
 autocompletion. Also, it reads your `ansible.cfg` for `ssh_args` in so you
 don't have to specify them manually.
 
+{::nomarkdown}
 <script type="text/javascript" src="https://asciinema.org/a/goPw7w6l8qCFPLXmEjxZEKCHL.js" id="asciicast-goPw7w6l8qCFPLXmEjxZEKCHL" async></script>
+{:/}
 
 ## Prerequirements
 
