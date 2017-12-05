@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/zsh
 
 LIST_HOSTS=false
 INV=""
@@ -24,18 +24,19 @@ done
 
 INV_FILE=""
 
-if [ "$INV" != "" ]; then
-    if [ -e $INV ] && [ -f $INV ]; then
-        INV_FILE=$INV
+if [[ "$INV" != "" ]]; then
+    INV=`echo $INV | sed 's/^ *//;s/ *$//'`
+    if [[ -e $INV ]] && [[ -f $INV ]]; then
+        INV_FILE=`echo $INV | sed 's/^ *//;s/ *$//'`
     else
         echo "Error: Inventory $INV does not exist."
         exit 1
     fi
 fi
 
-if [ "$INV_FILE" == "" ] && [ -e ./ansible.cfg ] && [ -f ./ansible.cfg ]; then
+if [[ "$INV_FILE" = "" ]] && [[ -e ./ansible.cfg ]] && [[ -f ./ansible.cfg ]]; then
     POTENTIAL_INV_FILE=`awk -F "=" '/^inventory/ {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}' ansible.cfg`
-    if [ -e $POTENTIAL_INV_FILE ] && [ -f $POTENTIAL_INV_FILE ]; then
+    if [[ -e $POTENTIAL_INV_FILE ]] && [[ -f $POTENTIAL_INV_FILE ]]; then
         INV_FILE=$POTENTIAL_INV_FILE
     else
         echo "Error: Inventory $INV from ansible.cfg does not exist."
@@ -43,31 +44,23 @@ if [ "$INV_FILE" == "" ] && [ -e ./ansible.cfg ] && [ -f ./ansible.cfg ]; then
     fi
 fi
 
-INV_FLAG=""
-
-if [ "$INV_FILE" == "" ]; then
+if [[ "$INV_FILE" = "" ]]; then
     echo "Error: No inventory to work with."
     exit 1
 fi
 
-INV_FLAG="--inventory $INV_FILE"
-
 if $LIST_HOSTS; then
-    HOSTS=`awk '/children\]/{flag=0;next}/\[*\]/{flag=1}flag' $INV_FILE | awk -F" " '!/^(;|#|\[|[:space:]*$)/ {print $1}'`
-    # if any other inventory than a static file is used, awking does frankly not work
-    # in that case, we have to invoke ansible with --list-hosts, which is slow as
-    # fuck...
-    # HOSTS=`ansible all $INV_FLAG --list-hosts | grep -v 'hosts' | sed 's/^[ \t]*//' | tr '\n' ' ' 2>/dev/null`
+    HOSTS=`awk '/children\]/{flag=0;next}/\[*\]/{flag=1}flag' $INV_FILE | awk -F" " '!/^(;|#|\[|[:space:]*$)/ {printf $1" "}'`
     echo $HOSTS
     exit 0
 fi
 
 shift $((OPTIND-1))
 
-if [ $# -gt 1 ]; then
+if [[ $# -gt 1 ]]; then
     echo "Error: Too many arguments, only one argument allowed"
     exit 0
-elif [ $# -lt 1 ]; then
+elif [[ $# -lt 1 ]]; then
     echo "Error: Too little arguments, one argument requried"
     exit 0
 fi
@@ -76,14 +69,14 @@ HOST=$@
 
 SSH_ARGS=""
 
-if [ -e ./ansible.cfg ] && [ -f ./ansible.cfg ]; then
+if [[ -e ./ansible.cfg ]] && [[ -f ./ansible.cfg ]]; then
     LINE=`grep "ssh_args" ./ansible.cfg`
     SSH_ARGS="${LINE#*=}"
 fi
 
-echo "$HOST"
-ssh $SSH_ARGS $HOST
+CMD="ssh $SSH_ARGS $HOST"
+eval $CMD
 
-if [ $? -ne 0 ]; then
+if [[ $? -ne 0 ]]; then
     echo "Error: connection failed"
 fi
