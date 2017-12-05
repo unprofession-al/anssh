@@ -11,7 +11,6 @@ don't have to specify them manually.
 * `zsh` installed
 * `ssh` installed
 * `sed` and `awk` installed
-* custom inventories must be located in `./hosts/` in order to be found by thu completion function
 
 ## Installation
 
