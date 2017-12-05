@@ -17,8 +17,7 @@ _anssh () {
 
 _anssh_inventories_show () {
     local -a inventories
-    inventories=("${(@f)$(find hosts -maxdepth 1 -type f -printf '%f\n')}")
-    _multi_parts / inventories
+    _path_files
 }
 
 _anssh_hosts_show () {
