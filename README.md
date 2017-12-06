@@ -1,7 +1,7 @@
 # anssh
 
 `anssh` is a tiny wrapper around ssh that uses your ansible inventory for
-autocompletion. Also, it reads your `ansible.cfg` for `ssh_args` in so you
+autocompletion. Also, it reads your `ssh_args` from `ansible.cfg` so you
 don't have to specify them manually.
 
 [![asciicast](https://asciinema.org/a/goPw7w6l8qCFPLXmEjxZEKCHL.png)](https://asciinema.org/a/goPw7w6l8qCFPLXmEjxZEKCHL)
